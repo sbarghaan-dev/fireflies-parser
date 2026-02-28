@@ -147,8 +147,19 @@ def parse():
         asana_project_id = MY_NETWORK_PROJECT_ID if has_only_personal else CATCHALL_PROJECT_ID
 
     # -------- Section name --------
+    # Extract date from anywhere in the text using regex
     section_date = ""
-    if meeting_date_str:
+    date_match = re.search(
+        r'Date:\s*([A-Za-z]+ \d{1,2},\s*\d{4})',
+        meeting_date_str, re.IGNORECASE
+    )
+    if date_match:
+        try:
+            dt = datetime.strptime(date_match.group(1).strip(), "%B %d, %Y")
+            section_date = dt.strftime("%b %d, %Y")
+        except ValueError:
+            pass
+    if not section_date and meeting_date_str:
         for fmt in ("%B %d, %Y %I:%M %p %Z", "%B %d, %Y %I:%M %p", "%B %d, %Y"):
             try:
                 cleaned = (meeting_date_str
