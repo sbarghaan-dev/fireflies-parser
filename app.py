@@ -50,6 +50,8 @@ def parse():
         "stage-2":          "1210376302975806",
         "nac":              "1209713385820861",
         "national ability": "1209713385820861",
+        "accord":           "1209761576173351",
+        "inaccord":         "1209761576173351",
         "angela":           "1209738855279618",
         "revolear":         "1210088476509780",
         "arkestro":         "1212501263453507",
@@ -180,18 +182,8 @@ def parse():
         s = ln.strip()
         if not s:
             continue
-        m_b = bullet_pat.match(ln)
-        if m_b:
-            if curr_task:
-                items.append((curr_owner, curr_task.strip()))
-            curr_task = m_b.group(1).strip()
-            m_inline = (inline_bracket.match(curr_task) or
-                        inline_colon.match(curr_task) or
-                        inline_bare.match(curr_task))
-            if m_inline:
-                curr_owner = m_inline.group('owner').strip()
-                curr_task  = m_inline.group('rest').strip()
-            continue
+
+        # Owner header takes priority - catches "Name:" on its own line
         m_o = owner_header_pat.match(ln)
         if m_o:
             if curr_task:
@@ -199,6 +191,21 @@ def parse():
                 curr_task = None
             curr_owner = m_o.group('owner').strip()
             continue
+
+        m_b = bullet_pat.match(ln)
+        if m_b:
+            if curr_task:
+                items.append((curr_owner, curr_task.strip()))
+            curr_task = m_b.group(1).strip()
+            # Check if bullet itself starts with an owner
+            m_inline = (inline_bracket.match(curr_task) or
+                        inline_colon.match(curr_task) or
+                        inline_bare.match(curr_task))
+            if m_inline:
+                curr_owner = m_inline.group('owner').strip()
+                curr_task  = m_inline.group('rest').strip()
+            continue
+
         if curr_task:
             curr_task += ' ' + s
         else:
