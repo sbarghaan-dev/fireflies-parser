@@ -264,8 +264,20 @@ def parse():
             plain_lines.append(f"- {task}")
             html_lines.append(f"<li>{task}</li>")
 
+    # -------- Build overview HTML with bold labels --------
+    overview_html_lines = []
+    for line in (overview or '').strip().split('\n'):
+        line = line.strip().lstrip('- ').strip()
+        if ':' in line:
+            label, rest = line.split(':', 1)
+            overview_html_lines.append(f"<li><b>{label.strip()}:</b>{rest}</li>")
+        elif line:
+            overview_html_lines.append(f"<li>{line}</li>")
+    overview_html = "".join(overview_html_lines)
+
     result = {
         "overview_text":         (overview or '').strip(),
+        "overview_html":          overview_html,
         "action_items_bullets":  "\n".join(plain_lines).strip(),
         "items_html":            "".join(html_lines),
         "emails_joined":         ", ".join(uniq),
