@@ -65,15 +65,86 @@ def parse():
     SCOTT_NAMES           = {"scott", "scott barghaan", "scott b"}
     OTHER_OWNER_FIELD_GID = "1210898742771365"
 
-    # -------- Project routing --------
-    title_lower = doc_title.lower()
+    # -------- EMAIL DOMAIN LOOKUP TABLE --------
+    DOMAIN_MAP = {
+        # Databook clients
+        "goconsensus.com":    "1212896479276968",
+        "databook.com":       "1209694673930748",
+        "microsoft.com":      "1210069349567014",
+        "workday.com":        "1210895097690192",
+        "servicenow.com":     "1213426227880237",
+        "uipath.com":         "1209967758013887",
+        "bombora.com":        "1209906059708631",
+        "amperity.com":       "1209878243266352",
+        "nutanix.com":        "1209904779807372",
+        "fortinet.com":       "1209904779807349",
+        "planview.com":       "1209904779807340",
+        "juniper.net":        "1209904779807381",
+        "hpe.com":            "1209866692256215",
+        "amazonaws.com":      "1209833262475732",
+        "accenture.com":      "1209833262475698",
+        "ifs.com":            "1209878243266367",
+        "f5.com":             "1210376082717082",
+        "konicaminolta.com":  "1210376015464430",
+        "fisglobal.com":      "1210093465965056",
+        "fidelity.com":       "1213402351644423",
+        # Accord/Inaccord
+        "inaccord.com":       "1209761576173351",
+        "accord.com":         "1209761576173351",
+        # Stage 2
+        "stage2capital.com":  "1210376302975806",
+        # NAC
+        "discovernac.org":    "1209713385820861",
+        # Kellogg
+        "kellogg.northwestern.edu": "1210607165419426",
+        # Sora
+        "sora.com":           "1213367830867287",
+        # Revolear
+        "revolear.com":       "1210088476509780",
+        # Arkestro
+        "arkestro.com":       "1212501263453507",
+        # PathFactory
+        "pathfactory.com":    "1209961909785004",
+        # AnySoft
+        "anysoft.com":        "1213426111951560",
+        # BlindIT
+        "blindit.org":        "1210912320853707",
+    }
+
+    MY_NETWORK_PROJECT_ID = "1210376255146963"
+
+    # -------- Project routing: email domain first, then title, then My Network --------
+    # Extract domains from emails
+    email_list = [e.strip() for e in text.split() if '@' in e]
+    all_emails = re.findall(r'[\w.\-+%]+@[\w.\-]+\.\w+', text, flags=re.I)
+    skip = {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
+    attendee_emails = [e for e in all_emails if e.lower() not in skip]
+
     asana_project_id = ""
-    for keyword, pid in PROJECT_MAP.items():
-        if keyword in title_lower:
-            asana_project_id = pid
+
+    # Try domain match first
+    for email in attendee_emails:
+        domain = email.split('@')[-1].lower()
+        if domain in DOMAIN_MAP:
+            asana_project_id = DOMAIN_MAP[domain]
             break
+
+    # Fall back to title match
     if not asana_project_id:
-        asana_project_id = CATCHALL_PROJECT_ID
+        title_lower = doc_title.lower()
+        for keyword, pid in PROJECT_MAP.items():
+            if keyword in title_lower:
+                asana_project_id = pid
+                break
+
+    # Fall back to My Network for known personal domains, else catch-all
+    if not asana_project_id:
+        personal_domains = {"gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com"}
+        has_only_personal = all(
+            e.split('@')[-1].lower() in personal_domains
+            for e in attendee_emails
+        ) if attendee_emails else False
+        asana_project_id = MY_NETWORK_PROJECT_ID if has_only_personal else CATCHALL_PROJECT_ID
 
     # -------- Section name --------
     section_date = ""
