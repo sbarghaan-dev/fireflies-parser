@@ -165,7 +165,6 @@ def parse():
     block = (actions_block or '').strip()
     block = re.sub(r'\s-\s+(?=[\[\(]?[A-Z])', '\n- ', block)
     block = re.sub(r'\s[•\u2022]\s+(?=[\[\(]?[A-Z])', '\n- ', block)
-    block = re.sub(rf'\s+(?={OWNER}\s*:\s*)', '\n- ', block)
     block = re.sub(rf'\s+(?={OWNER}\s+{VERB}\b)', '\n- ', block)
 
     items      = []
