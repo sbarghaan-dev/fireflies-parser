@@ -354,7 +354,7 @@ def parse():
 
         task_objects.append({
             "name":         task,
-            "assignee_gid": assignee_gid,
+            "assignee_gid": assignee_gid if assignee_gid else None,
             "other_owner":  other_owner,
             "due_date":     due_date,
             "notes":        f"Meeting summary: {doc_url}" if doc_url else "",
