@@ -46,7 +46,7 @@ def generate_dex_summary(overview_text, meeting_title, doc_url):
     if doc_url:
         summary = f"{summary} | Meeting summary: {doc_url}"   # NEW
 
-    return summary
+    return summary.replace('\n', ' ').replace('\r', ' ')
 
 
 @app.route('/parse', methods=['POST'])
