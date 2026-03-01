@@ -44,7 +44,7 @@ def generate_dex_summary(overview_text, meeting_title, doc_url):
 
     # Append the doc link
     if doc_url:
-        summary = f"{summary}\n\nMeeting summary: {doc_url}"   # NEW
+        summary = f"{summary} | Meeting summary: {doc_url}"   # NEW
 
     return summary
 
