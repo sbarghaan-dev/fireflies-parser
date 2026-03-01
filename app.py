@@ -1,9 +1,53 @@
 import json
 import re
+import os                                          # NEW
+import requests                                    # NEW
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
+
+# NEW - Claude API call to generate Dex note summary
+def generate_dex_summary(overview_text, meeting_title, doc_url):
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key or not overview_text:
+        fallback = (overview_text or "")[:400].strip()
+        return f"{fallback}\n\n{doc_url}" if doc_url else fallback
+
+    prompt = (
+        f"You are summarizing a business meeting for a personal CRM note. "
+        f"Write exactly 3-4 sentences summarizing the key discussion points and outcomes from this meeting overview. "
+        f"Be specific and factual. Do not use bullet points. Plain prose only.\n\n"
+        f"Meeting: {meeting_title}\n\n"
+        f"Overview:\n{overview_text}"
+    )
+
+    try:
+        resp = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-sonnet-4-20250514",
+                "max_tokens": 300,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=30,
+        )
+        data = resp.json()
+        summary = data["content"][0]["text"].strip()
+    except Exception:
+        summary = (overview_text or "")[:400].strip()
+
+    # Append the doc link
+    if doc_url:
+        summary = f"{summary}\n\nMeeting summary: {doc_url}"   # NEW
+
+    return summary
+
 
 @app.route('/parse', methods=['POST'])
 def parse():
@@ -67,7 +111,6 @@ def parse():
 
     # -------- EMAIL DOMAIN LOOKUP TABLE --------
     DOMAIN_MAP = {
-        # Databook clients
         "goconsensus.com":    "1212896479276968",
         "databook.com":       "1209694673930748",
         "microsoft.com":      "1210069349567014",
@@ -88,48 +131,34 @@ def parse():
         "konicaminolta.com":  "1210376015464430",
         "fisglobal.com":      "1210093465965056",
         "fidelity.com":       "1213402351644423",
-        # Accord/Inaccord
         "inaccord.com":       "1209761576173351",
         "accord.com":         "1209761576173351",
-        # Stage 2
         "stage2capital.com":  "1210376302975806",
-        # NAC
         "discovernac.org":    "1209713385820861",
-        # Kellogg
         "kellogg.northwestern.edu": "1210607165419426",
-        # Sora
         "sora.com":           "1213367830867287",
-        # Revolear
         "revolear.com":       "1210088476509780",
-        # Arkestro
         "arkestro.com":       "1212501263453507",
-        # PathFactory
         "pathfactory.com":    "1209961909785004",
-        # AnySoft
         "anysoft.com":        "1213426111951560",
-        # BlindIT
         "blindit.org":        "1210912320853707",
     }
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
 
-    # -------- Project routing: email domain first, then title, then My Network --------
-    # Extract domains from emails
-    email_list = [e.strip() for e in text.split() if '@' in e]
+    # -------- Project routing --------
     all_emails = re.findall(r'[\w.\-+%]+@[\w.\-]+\.\w+', text, flags=re.I)
     skip = {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
     attendee_emails = [e for e in all_emails if e.lower() not in skip]
 
     asana_project_id = ""
 
-    # Try domain match first
     for email in attendee_emails:
         domain = email.split('@')[-1].lower()
         if domain in DOMAIN_MAP:
             asana_project_id = DOMAIN_MAP[domain]
             break
 
-    # Fall back to title match
     if not asana_project_id:
         title_lower = doc_title.lower()
         for keyword, pid in PROJECT_MAP.items():
@@ -137,7 +166,6 @@ def parse():
                 asana_project_id = pid
                 break
 
-    # Fall back to My Network for known personal domains, else catch-all
     if not asana_project_id:
         personal_domains = {"gmail.com", "yahoo.com", "hotmail.com", "outlook.com", "icloud.com"}
         has_only_personal = all(
@@ -147,7 +175,6 @@ def parse():
         asana_project_id = MY_NETWORK_PROJECT_ID if has_only_personal else CATCHALL_PROJECT_ID
 
     # -------- Section name --------
-    # Extract date from anywhere in the text using regex
     section_date = ""
     date_match = re.search(
         r'Date:\s*([A-Za-z]+ \d{1,2},\s*\d{4})',
@@ -264,7 +291,6 @@ def parse():
         if not s:
             continue
 
-        # Owner header takes priority - catches "Name:" on its own line
         m_o = owner_header_pat.match(ln)
         if m_o:
             if curr_task:
@@ -278,7 +304,6 @@ def parse():
             if curr_task:
                 items.append((curr_owner, curr_task.strip()))
             curr_task = m_b.group(1).strip()
-            # Check if bullet itself starts with an owner
             m_inline = (inline_bracket.match(curr_task) or
                         inline_colon.match(curr_task) or
                         inline_bare.match(curr_task))
@@ -346,7 +371,7 @@ def parse():
             plain_lines.append(f"- {task}")
             html_lines.append(f"<li>{task}</li>")
 
-    # -------- Build overview HTML with bold labels --------
+    # -------- Build overview HTML --------
     overview_html_lines = []
     for line in (overview or '').strip().split('\n'):
         line = line.strip().lstrip('- ').strip()
@@ -356,6 +381,12 @@ def parse():
         elif line:
             overview_html_lines.append(f"<li>{line}</li>")
     overview_html = "".join(overview_html_lines)
+
+    # NEW - Generate Dex note (Claude summary + doc link)
+    dex_note = generate_dex_summary(overview, doc_title, doc_url)
+
+    # NEW - Clean attendee email list for Dex lookups (exclude self + Fireflies system emails)
+    dex_attendee_emails = [e for e in uniq if e.lower() not in drop]
 
     result = {
         "overview_text":         (overview or '').strip(),
@@ -370,6 +401,8 @@ def parse():
         "scott_due_date":        scott_due_date,
         "others_due_date":       others_due_date,
         "other_owner_field_gid": OTHER_OWNER_FIELD_GID,
+        "dex_note":              dex_note,              # NEW
+        "dex_attendee_emails":   dex_attendee_emails,  # NEW
     }
 
     return jsonify(result), 200
