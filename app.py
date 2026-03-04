@@ -44,9 +44,9 @@ def generate_dex_summary(overview_text, meeting_title, doc_url):
 
     # Append the doc link
     if doc_url:
-        summary = f"{summary} | Meeting summary: {doc_url}"   # NEW
+        summary = f"{summary}\n\nMeeting summary: {doc_url}"   # NEW
 
-    return summary.replace('\n', ' ').replace('\r', ' ')
+    return summary
 
 
 @app.route('/parse', methods=['POST'])
@@ -67,7 +67,7 @@ def parse():
 
     # -------- PROJECT LOOKUP TABLE --------
     PROJECT_MAP = {
-        "salesforce":       "1209895234740542",
+
         "consensus":        "1212896479276968",
         "fidelity":         "1213402351644423",
         "servicenow":       "1213426227880237",
@@ -112,6 +112,7 @@ def parse():
     # -------- EMAIL DOMAIN LOOKUP TABLE --------
     DOMAIN_MAP = {
         "goconsensus.com":    "1212896479276968",
+        # salesforce.com removed - routed by named email instead
         "databook.com":       "1209694673930748",
         "microsoft.com":      "1210069349567014",
         "workday.com":        "1210895097690192",
@@ -146,6 +147,15 @@ def parse():
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
 
+    # -------- Named email overrides --------
+    EMAIL_MAP = {
+        "russell.scherwin@outlook.com": "1213546899146018",   # Russ Sherwin - Other Network
+        "juliavp27@yahoo.com":          "1213546903950732",   # Julia Vander Plough
+        "mkrejcova@salesforce.com":     "1213546921820103",   # M. Krejcova - Salesforce
+        "verma.s@salesforce.com":       "1210912320853707",   # S. Verma - Salesforce
+        "ryan.crombeen@salesforce.com": "1210376255146963",   # Ryan Crombeen - Salesforce
+    }
+
     # -------- Project routing --------
     all_emails = re.findall(r'[\w.\-+%]+@[\w.\-]+\.\w+', text, flags=re.I)
     skip = {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
@@ -154,10 +164,16 @@ def parse():
     asana_project_id = ""
 
     for email in attendee_emails:
-        domain = email.split('@')[-1].lower()
-        if domain in DOMAIN_MAP:
-            asana_project_id = DOMAIN_MAP[domain]
+        if email.lower() in EMAIL_MAP:
+            asana_project_id = EMAIL_MAP[email.lower()]
             break
+
+    if not asana_project_id:
+        for email in attendee_emails:
+            domain = email.split('@')[-1].lower()
+            if domain in DOMAIN_MAP:
+                asana_project_id = DOMAIN_MAP[domain]
+                break
 
     if not asana_project_id:
         title_lower = doc_title.lower()
@@ -354,7 +370,7 @@ def parse():
 
         task_objects.append({
             "name":         task,
-            "assignee_gid": assignee_gid if assignee_gid else None,
+            "assignee_gid": assignee_gid,
             "other_owner":  other_owner,
             "due_date":     due_date,
             "notes":        f"Meeting summary: {doc_url}" if doc_url else "",
