@@ -481,6 +481,25 @@ def coaching_rollup():
     except json.JSONDecodeError:
         return jsonify({"success": False, "raw": response_text}), 200
 
+@app.route('/extract-notion-blocks', methods=['POST'])
+def extract_notion_blocks():
+    try:
+        body = request.get_json(silent=True) or {}
+    except Exception:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    blocks = body.get('blocks', [])
+    lines = []
+
+    for block in blocks:
+        block_type = block.get('type', '')
+        type_data = block.get(block_type, {})
+        rich_text = type_data.get('rich_text', [])
+        text = ''.join([rt.get('plain_text', '') for rt in rich_text])
+        if text.strip():
+            lines.append(text.strip())
+
+    return jsonify({"text": "\n".join(lines)}), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
