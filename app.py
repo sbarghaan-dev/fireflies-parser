@@ -423,6 +423,64 @@ def parse():
 
     return jsonify(result), 200
 
+@app.route('/coaching-rollup', methods=['POST'])
+def coaching_rollup():
+    try:
+        body = request.get_json(silent=True) or {}
+    except Exception:
+        return jsonify({"error": "Invalid JSON body"}), 400
+
+    ledger = (body.get('ledger') or '').strip()
+    emails = (body.get('emails') or '').strip()
+
+    if not emails:
+        return jsonify({"error": "Field 'emails' is required and was empty"}), 400
+
+    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    if not api_key:
+        return jsonify({"error": "ANTHROPIC_API_KEY not set"}), 500
+
+    prompt = (
+        f"You are a coaching analyst synthesizing weekly meeting coaching data for Scott Barghaan. "
+        f"Here is Scott's persistent coaching ledger: <ledger>{ledger}</ledger> "
+        f"Here are this week's Fireflies coaching email summaries: <this_week>{emails}</this_week> "
+        f"Your job: "
+        f"1. Identify which existing patterns from the ledger appeared this week and increment their count. "
+        f"2. Identify any new patterns not in the ledger. "
+        f"3. Note which strengths showed up. "
+        f"4. Check whether last week's active focus moved. "
+        f"5. Set next week's focus - one thing only. "
+        f"6. Compute average scores across this week's meetings for all 5 dimensions. "
+        f"Return ONLY raw JSON, no preamble, no markdown, no backticks, nothing before or after the opening curly brace. "
+        f'Use this exact structure: {{"week_label":"Apr 7-13","meetings_reviewed":3,"scores":{{"listening":3.7,"questions":3.3,"advice_timing":3.7,"situational_read":4.0,"restraint":3.3,"avg":3.6}},"patterns":[{{"name":"Solution jump","status":"recurring","appeared_this_week":true,"meetings_this_week":2,"total_meeting_count":16,"last_seen":"Apr 9"}}],"strengths_this_week":["Situational read","Framing strategy before tactics"],"focus_last_week":"Confirm before committing","focus_movement":"Partial - appeared in 1 of 3 meetings vs 2 of 3 last week","focus_next_week":"One sharp diagnostic question before any offer - every time","high_five":"Situational read scored 4+ across all 3 meetings - that is 5 straight weeks at this level. It is a real strength not a fluke.","nudge":"Solution jump appeared again in 2 of 3 meetings. The pattern is not a habit issue - it is a structure issue. Add one question before any offer and make it non-negotiable.","one_line_summary":"Strong read of the room still moving too fast once you see the path."}}'
+    )
+
+    try:
+        resp = requests.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json",
+            },
+            json={
+                "model": "claude-sonnet-4-20250514",
+                "max_tokens": 4000,
+                "messages": [{"role": "user", "content": prompt}],
+            },
+            timeout=55,
+        )
+        data = resp.json()
+        response_text = data["content"][0]["text"].strip()
+    except Exception as e:
+        return jsonify({"error": f"Claude API call failed: {str(e)}"}), 500
+
+    try:
+        parsed = json.loads(response_text)
+        return jsonify({"success": True, "data": parsed}), 200
+    except json.JSONDecodeError:
+        return jsonify({"success": False, "raw": response_text}), 200
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
