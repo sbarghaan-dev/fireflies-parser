@@ -501,5 +501,39 @@ def extract_notion_blocks():
 
     return jsonify({"text": "\n".join(lines)}), 200
 
+@app.route('/get-ledger', methods=['GET'])
+def get_ledger():
+    notion_token = os.environ.get('NOTION_TOKEN', '')
+    page_id = '3404d02e-d005-8195-a595-f5e132e663d2'
+
+    if not notion_token:
+        return jsonify({"error": "NOTION_TOKEN not set"}), 500
+
+    try:
+        resp = requests.get(
+            f'https://api.notion.com/v1/blocks/{page_id}/children',
+            headers={
+                'Authorization': f'Bearer {notion_token}',
+                'Notion-Version': '2022-06-28',
+            },
+            timeout=30,
+        )
+        data = resp.json()
+        blocks = data.get('results', [])
+        lines = []
+
+        for block in blocks:
+            block_type = block.get('type', '')
+            type_data = block.get(block_type, {})
+            rich_text = type_data.get('rich_text', [])
+            text = ''.join([rt.get('plain_text', '') for rt in rich_text])
+            if text.strip():
+                lines.append(text.strip())
+
+        return jsonify({"text": "\n".join(lines)}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
