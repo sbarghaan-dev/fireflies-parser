@@ -536,5 +536,57 @@ def get_ledger():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/update-ledger', methods=['POST'])
+def update_ledger():
+    notion_token = os.environ.get('NOTION_TOKEN', '')
+    page_id = '3404d02e-d005-8195-a595-f5e132e663d2'
+
+    try:
+        raw = request.get_data(as_text=True)
+        import re
+        def extract(key):
+            m = re.search(key + r':\s*(.*?)(?:\n[A-Z]|$)', raw, re.DOTALL)
+            return m.group(1).strip() if m else ''
+
+        week        = extract('WEEK')
+        listening   = extract('LISTENING')
+        questions   = extract('QUESTIONS')
+        advice      = extract('ADVICE')
+        situational = extract('SITUATIONAL')
+        restraint   = extract('RESTRAINT')
+        avg         = extract('AVG')
+        high_five   = extract('HIGHFIVE')
+        nudge       = extract('NUDGE')
+        focus_last  = extract('FOCUSLAST')
+        movement    = extract('MOVEMENT')
+        focus_next  = extract('FOCUSNEXT')
+
+        blocks = {
+            "children": [
+                {"object":"block","type":"heading_2","heading_2":{"rich_text":[{"type":"text","text":{"content":f"Week of {week}"}}]}},
+                {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":f"Scores - Listening: {listening} | Questions: {questions} | Advice timing: {advice} | Situational read: {situational} | Restraint: {restraint} | Avg: {avg}"}}]}},
+                {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":f"High five: {high_five}"}}]}},
+                {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":f"Nudge: {nudge}"}}]}},
+                {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":f"Focus last week: {focus_last} | Movement: {movement}"}}]}},
+                {"object":"block","type":"paragraph","paragraph":{"rich_text":[{"type":"text","text":{"content":f"Focus next week: {focus_next}"}}]}},
+                {"object":"block","type":"divider","divider":{}}
+            ]
+        }
+
+        resp = requests.patch(
+            f'https://api.notion.com/v1/blocks/{page_id}/children',
+            headers={
+                'Authorization': f'Bearer {notion_token}',
+                'Notion-Version': '2022-06-28',
+                'Content-Type': 'application/json',
+            },
+            json=blocks,
+            timeout=30,
+        )
+        return jsonify({"success": True, "status": resp.status_code}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
