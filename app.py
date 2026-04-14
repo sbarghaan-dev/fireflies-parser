@@ -501,7 +501,7 @@ def extract_notion_blocks():
 
     return jsonify({"text": "\n".join(lines)}), 200
 
-@app.route('/get-ledger', methods=['GET'])
+@app.route('/get-ledger', methods=['GET', 'POST'])
 def get_ledger():
     notion_token = os.environ.get('NOTION_TOKEN', '')
     page_id = '3404d02e-d005-8195-a595-f5e132e663d2'
