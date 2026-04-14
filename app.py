@@ -426,12 +426,13 @@ def parse():
 @app.route('/coaching-rollup', methods=['POST'])
 def coaching_rollup():
     try:
-        body = request.get_json(silent=True, force=True) or {}
-    except Exception:
-        return jsonify({"error": "Invalid JSON body"}), 400
-
-    ledger = (body.get('ledger') or '').strip()
-    emails = (body.get('emails') or '').strip()
+        raw = request.get_data(as_text=True)
+        ledger_match = re.search(r'LEDGER:\s*(.*?)\s*EMAILS:', raw, re.DOTALL)
+        emails_match = re.search(r'EMAILS:\s*(.*)', raw, re.DOTALL)
+        ledger = ledger_match.group(1).strip() if ledger_match else ''
+        emails = emails_match.group(1).strip() if emails_match else ''
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
     if not emails:
         return jsonify({"error": "Field 'emails' is required and was empty"}), 400
