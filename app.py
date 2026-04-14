@@ -426,7 +426,7 @@ def parse():
 @app.route('/coaching-rollup', methods=['POST'])
 def coaching_rollup():
     try:
-        body = request.get_json(silent=True) or {}
+        body = request.get_json(silent=True, force=True) or {}
     except Exception:
         return jsonify({"error": "Invalid JSON body"}), 400
 
