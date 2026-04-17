@@ -96,7 +96,7 @@ def parse():
         "national ability": "1209713385820861",
         "accord":           "1209761576173351",
         "inaccord":         "1209761576173351",
-        "angela":           "1209738855279618",
+        "cordova":           "1209738855279618",
         "revolear":         "1210088476509780",
         "arkestro":         "1212501263453507",
         "pathfactory":      "1209961909785004",
@@ -149,12 +149,13 @@ def parse():
 
     # -------- Named email overrides --------
     EMAIL_MAP = {
-        "russell.scherwin@outlook.com": "1213546899146018",   # Russ Sherwin - Other Network
-        "juliavp27@yahoo.com":          "1213546903950732",   # Julia Vander Plough
-        "mkrejcova@salesforce.com":     "1213546921820103",   # M. Krejcova - Salesforce
-        "verma.s@salesforce.com":       "1210912320853707",   # S. Verma - Salesforce
-        "ryan.crombeen@salesforce.com": "1210376255146963",   # Ryan Crombeen - Salesforce
-    }
+    "russell.scherwin@outlook.com": "1213546899146018",   # Russ Sherwin - Other Network
+    "juliavp27@yahoo.com":          "1213546903950732",   # Julia Vander Plough
+    "mkrejcova@salesforce.com":     "1213546921820103",   # M. Krejcova - Salesforce
+    "verma.s@salesforce.com":       "1210912320853707",   # S. Verma - Salesforce
+    "ryan.crombeen@salesforce.com": "1210376255146963",   # Ryan Crombeen - Salesforce
+    "ariordan2@atlassian.com":      "1209738855279618",   # Angela Riordan - Atlassian
+}
 
     # -------- Project routing --------
     all_emails = re.findall(r'[\w.\-+%]+@[\w.\-]+\.\w+', text, flags=re.I)
