@@ -142,7 +142,14 @@ def parse():
         "arkestro.com":       "1212501263453507",
         "pathfactory.com":    "1209961909785004",
         "anysoft.com":        "1213426111951560",
+	"stage2.capital":     "1210376302975806",
         "blindit.org":        "1210912320853707",
+	"ecosystems.us":	"1214471722023956",
+	"nm.com":		"1209711513656719",
+	"pigment.com":		"1214470316134271",
+	"nest-dc.com":		"1209694665527117",
+	"100founders.ai":	"1214470316134280",
+	"chi.frb.org":		"1214471864392639",
     }
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
