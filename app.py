@@ -164,6 +164,7 @@ def parse():
     "wilson@pomtherapeutic.com":    "1208535971285224",   # Wilson - Therapy
 	"ariordan2@atlassian.com":      "1214603131263731",   # Angela Riordan - Atlassian
 	"ap@genez.io":     				"1214471848721518",   # Andrei Pitis - Genezio
+	"ccardozo@openai.com":			"1214670197514208",		#Carlos - OpenAI
 }
 
     # -------- Project routing --------
