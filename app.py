@@ -161,8 +161,9 @@ def parse():
     "mkrejcova@salesforce.com":     "1213546921820103",   # M. Krejcova - Salesforce
     "verma.s@salesforce.com":       "1210912320853707",   # S. Verma - Salesforce
     "ryan.crombeen@salesforce.com": "1210376255146963",   # Ryan Crombeen - Salesforce
-    "wilson@pomtherapeutic.com":     "1208535971285224",   # Wilson - Therapy
+    "wilson@pomtherapeutic.com":    "1208535971285224",   # Wilson - Therapy
 	"ariordan2@atlassian.com":      "1214603131263731",   # Angela Riordan - Atlassian
+	"ap@genez.io":     				"1214471848721518",   # Andrei Pitis - Genezio
 }
 
     # -------- Project routing --------
