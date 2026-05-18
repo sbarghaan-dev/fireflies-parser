@@ -165,10 +165,10 @@ def parse():
 	"ariordan2@atlassian.com":      "1214603131263731",   # Angela Riordan - Atlassian
 	"ap@genez.io":     				"1214471848721518",   # Andrei Pitis - Genezio
 	"ccardozo@openai.com":			"1214670197514208",		#Carlos - OpenAI
-	"ivan.galea@trydatabook.com"	"1209829315301519",		#Ivan - Databook
-	"katie@salesengine.com"			"1213493590760692",		#Katie - Sales Engine BD
-	"info@7hats.ai"					"1214901050663851",		#Laurientu - 7hats.ai
-	"john.adj@gmail.com"			"1214901050663856",		#John Adjami
+	"ivan.galea@trydatabook.com":	"1209829315301519",		#Ivan - Databook
+	"katie@salesengine.com":		"1213493590760692",		#Katie - Sales Engine BD
+	"info@7hats.ai":				"1214901050663851",		#Laurientu - 7hats.ai
+	"john.adj@gmail.com":			"1214901050663856",		#John Adjami
 }
 
     # -------- Project routing --------
