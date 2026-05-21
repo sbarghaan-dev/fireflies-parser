@@ -102,6 +102,7 @@ def parse():
         "pathfactory":      "1209961909785004",
         "anysoft":          "1213426111951560",
         "blindit":          "1210912320853707",
+        "phoenix club":     "1213919344895382",
     }
 
     CATCHALL_PROJECT_ID   = "1209675753214645"
@@ -169,6 +170,9 @@ def parse():
 	"katie@salesengine.com":		"1213493590760692",		#Katie - Sales Engine BD
 	"info@7hats.ai":				"1214901050663851",		#Laurientu - 7hats.ai
 	"john.adj@gmail.com":			"1214901050663856",		#John Adjami
+	"craig@salesengine.com":		"1212466307851908",		#Craig Wortmann - Selling Systems (DS3)
+	"melissa.muller@muller-marketing.com":	"1214907315332204",	#Melissa Muller - Network Inactive
+	"shanna.murphy@salesforce.com":	"1214907375610423",		#Shanna Murphy - Network Inactive
 }
 
     # -------- Project routing --------
