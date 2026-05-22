@@ -143,6 +143,7 @@ def parse():
         "arkestro.com":       "1212501263453507",
         "pathfactory.com":    "1209961909785004",
         "anysoft.com":        "1213426111951560",
+        "blastpoint.com":     "1213909828453643",
 	"stage2.capital":     "1210376302975806",
         "blindit.org":        "1210912320853707",
 	"ecosystems.us":	"1214471722023956",
