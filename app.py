@@ -174,6 +174,29 @@ def parse():
 	"craig@salesengine.com":		"1212466307851908",		#Craig Wortmann - Selling Systems (DS3)
 	"melissa.muller@muller-marketing.com":	"1214907315332204",	#Melissa Muller - Network Inactive
 	"shanna.murphy@salesforce.com":	"1214907375610423",		#Shanna Murphy - Network Inactive
+
+    # -------- Kellogg overrides (one domain, three projects -> must route per-email) --------
+    "kathleen.bayert@kellogg.northwestern.edu": "1211175684625793",  # K - Kathy
+
+    # K - AI Lab Spring
+    "ashish.mittal@kellogg.northwestern.edu":   "1210607165419426",
+    "daniel.gordon@kellogg.northwestern.edu":   "1210607165419426",
+    "karan.badalia@kellogg.northwestern.edu":   "1210607165419426",
+    "laasya.revilla@kellogg.northwestern.edu":  "1210607165419426",
+    "nathan.salomon@kellogg.northwestern.edu":  "1210607165419426",
+    "nicole.yu@kellogg.northwestern.edu":       "1210607165419426",
+    "pablo.landa@kellogg.northwestern.edu":     "1210607165419426",
+    "renata.sarzano@kellogg.northwestern.edu":  "1210607165419426",
+    "stephanie.kuo@kellogg.northwestern.edu":   "1210607165419426",
+    "taylor.casey@kellogg.northwestern.edu":    "1210607165419426",
+    "winnie.li@kellogg.northwestern.edu":       "1210607165419426",
+    "zhaorui.wei@kellogg.northwestern.edu":     "1210607165419426",
+
+    # K - HBR Article
+    "e9t9a9@gmail.com":                           "1215140981108194",  # Eric Anderson (personal)
+    "eric-anderson@kellogg.northwestern.edu":     "1215140981108194",
+    "d-rucker@kellogg.northwestern.edu":          "1215140981108194",  # Derek Rucker
+    "nicholas.caffentzis@kellogg.northwestern.edu": "1215140981108194",  # Nick Caffentzis
 }
 
     # -------- Project routing --------
