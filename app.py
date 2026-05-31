@@ -66,7 +66,24 @@ def parse():
         return jsonify({"error": "Field 'raw' is required and was empty"}), 400
 
     # -------- PROJECT LOOKUP TABLE --------
+    # Routing mental model (do not skip this):
+    #   1. EMAIL_MAP  = "I know this exact person belongs to this project"
+    #   2. DOMAIN_MAP = "I know everyone at this company belongs to this project"
+    #   3. PROJECT_MAP (title keyword) = "I do not know the people, but the topic tells me"
+    #   4. Catchall = personal-only -> My Network, else -> catchall
+    # Title keywords DO NOT override EMAIL_MAP or DOMAIN_MAP. They only fire when no
+    # mapped attendee is present. PROJECT_MAP iterates in dict insertion order; put
+    # SPECIFIC keywords BEFORE GENERIC ones (e.g. "ai lab" before "kellogg") so the
+    # specific match wins. Kellogg cluster lives at the top of this dict for that reason.
     PROJECT_MAP = {
+
+        # Kellogg cluster (specific keywords first, generic "kellogg" last)
+        "hbr":              "1215140981108194",   # K - HBR Article
+        "ds3":              "1212466307851908",   # K - Selling Systems (alias)
+        "ai lab":           "1210607165419426",   # K - AI Lab (Spring 26)
+        "klue":             "1210607165419426",   # K - AI Lab (Klue partnership)
+        "emeritus":         "1215152424264429",   # K - Emeritus
+        "kellogg":          "1210898462894262",   # K-General (last-resort Kellogg fallback)
 
         "consensus":        "1212896479276968",
         "fidelity":         "1213402351644423",
@@ -88,7 +105,6 @@ def parse():
         "f5":               "1210376082717082",
         "konica":           "1210376015464430",
         "fis":              "1210093465965056",
-        "kellogg":          "1210607165419426",
         "selling systems":  "1212466307851908",
         "stage 2":          "1210376302975806",
         "stage-2":          "1210376302975806",
@@ -137,7 +153,7 @@ def parse():
         "accord.com":         "1209761576173351",
         "stage2capital.com":  "1210376302975806",
         "discovernac.org":    "1209713385820861",
-        "kellogg.northwestern.edu": "1210607165419426",
+        "kellogg.northwestern.edu": "1210898462894262",  # K-General - was AI Lab; per-cohort emails route via EMAIL_MAP
         "sora.com":           "1213367830867287",
         "revolear.com":       "1210088476509780",
         "arkestro.com":       "1212501263453507",
@@ -180,8 +196,9 @@ def parse():
 	"kburkert@salesforce.com":	"1214836818737266",		#Kevin Burkert - Salesforce
 	"mark.niemiec@sap.com":		"1215241483038297",		#Mark Niemiec - SAP
 
-    # -------- Kellogg overrides (one domain, three projects -> must route per-email) --------
+    # -------- Kellogg overrides (one domain, many projects -> must route per-email) --------
     "kathleen.bayert@kellogg.northwestern.edu": "1211175684625793",  # K - Kathy
+    "michelle.rimsa@kellogg.northwestern.edu":  "1215261909024416",  # K - Michelle Rimsa
 
     # K - AI Lab Spring
     "ashish.mittal@kellogg.northwestern.edu":   "1210607165419426",
