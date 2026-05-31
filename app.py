@@ -152,6 +152,8 @@ def parse():
 	"nest-dc.com":		"1209694665527117",
 	"100founders.ai":	"1214470316134280",
 	"chi.frb.org":		"1214471864392639",
+	"dialecticanet.com":	"1215241483038308",
+	"clay.com":		"1215241483038315",
     }
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
@@ -174,6 +176,9 @@ def parse():
 	"craig@salesengine.com":		"1212466307851908",		#Craig Wortmann - Selling Systems (DS3)
 	"melissa.muller@muller-marketing.com":	"1214907315332204",	#Melissa Muller - Network Inactive
 	"shanna.murphy@salesforce.com":	"1214907375610423",		#Shanna Murphy - Network Inactive
+	"cnanka@salesforce.com":	"1215241483038302",		#Colin Nanka - Salesforce
+	"kburkert@salesforce.com":	"1214836818737266",		#Kevin Burkert - Salesforce
+	"mark.niemiec@sap.com":		"1215241483038297",		#Mark Niemiec - SAP
 
     # -------- Kellogg overrides (one domain, three projects -> must route per-email) --------
     "kathleen.bayert@kellogg.northwestern.edu": "1211175684625793",  # K - Kathy
