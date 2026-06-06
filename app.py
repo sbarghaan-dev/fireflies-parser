@@ -62,6 +62,16 @@ def parse():
     meeting_date_str = (body.get('meeting_date') or '').strip()
     doc_url          = (body.get('doc_url') or '').strip()
 
+    # All of Scott's own addresses. Union'd with self_email below so
+    # self-detection survives identity changes (June 2026 domain flip)
+    # regardless of which address the calendar/Fireflies surfaces or
+    # what the Make module passes as self_email.
+    SELF_EMAILS = {
+        "scott@scottbarghaan.com",       # primary, client-facing (June 2026+)
+        "sbarghaan@gmail.com",           # legacy personal, forwards in
+        "sbarghaan@barghaanllc.com",     # Workspace alias (pre-rename primary)
+    }
+
     if not text:
         return jsonify({"error": "Field 'raw' is required and was empty"}), 400
 
@@ -223,7 +233,7 @@ def parse():
 
     # -------- Project routing --------
     all_emails = re.findall(r'[\w.\-+%]+@[\w.\-]+\.\w+', text, flags=re.I)
-    skip = {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
+    skip = SELF_EMAILS | {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
     attendee_emails = [e for e in all_emails if e.lower() not in skip]
 
     asana_project_id = ""
@@ -342,7 +352,7 @@ def parse():
         if el not in seen:
             seen.add(el)
             uniq.append(e)
-    drop = {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
+    drop = SELF_EMAILS | {self_email, 'meetings@fireflies.ai', 'team@fireflies.ai'}
     uniq = [e for e in uniq if e.lower() not in drop]
 
     # -------- Parse action items --------
