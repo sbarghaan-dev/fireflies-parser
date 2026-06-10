@@ -186,6 +186,9 @@ def parse():
 
     # -------- Named email overrides --------
     EMAIL_MAP = {
+    "sam@goluci.io":                "1215523079772555",   # Sam Tepper - Luci
+    "lisa.sacco@exxonmobil.com":    "1215523079772560",   # Lisa Sacco - Exxon
+    "daverubinstein@gmail.com":     "1214470316134280",   # Dave Rubinstein
     "russell.scherwin@outlook.com": "1213546899146018",   # Russ Sherwin - Other Network
     "juliavp27@yahoo.com":          "1213546903950732",   # Julia Vander Plough
     "mkrejcova@salesforce.com":     "1213546921820103",   # M. Krejcova - Salesforce
