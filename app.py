@@ -180,6 +180,7 @@ def parse():
 	"chi.frb.org":		"1214471864392639",
 	"dialecticanet.com":	"1215241483038308",
 	"clay.com":		"1215241483038315",
+	"forgd.ai":		"1216090375681751",
     }
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
@@ -203,10 +204,12 @@ def parse():
 	"info@7hats.ai":				"1214901050663851",		#Laurientu - 7hats.ai
 	"john.adj@gmail.com":			"1214901050663856",		#John Adjami
 	"craig@salesengine.com":		"1212466307851908",		#Craig Wortmann - Selling Systems (DS3)
+	"jeff@salesengine.com":			"1213493590760692",		#Jeff Lietz - Sales Engine BD
 	"melissa.muller@muller-marketing.com":	"1214907315332204",	#Melissa Muller - Network Inactive
 	"shanna.murphy@salesforce.com":	"1214907375610423",		#Shanna Murphy - Network Inactive
 	"cnanka@salesforce.com":	"1215241483038302",		#Colin Nanka - Salesforce
 	"kburkert@salesforce.com":	"1214836818737266",		#Kevin Burkert - Salesforce
+	"ssawkar@salesforce.com":	"1216090375681756",		#Siddarth Sawkar - Siddarth (SFDC)
 	"mark.niemiec@sap.com":		"1215241483038297",		#Mark Niemiec - SAP
 
     # -------- Kellogg overrides (one domain, many projects -> must route per-email) --------
