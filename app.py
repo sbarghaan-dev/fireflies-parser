@@ -31,7 +31,7 @@ def generate_dex_summary(overview_text, meeting_title, doc_url):
                 "content-type": "application/json",
             },
             json={
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-5",
                 "max_tokens": 300,
                 "messages": [{"role": "user", "content": prompt}],
             },
@@ -504,6 +504,32 @@ def parse():
 
     return jsonify(result), 200
 
+# NEW - graceful fallback payload for coaching-rollup so a Claude API failure
+# (retired model, auth error, rate limit, etc.) surfaces as a visible weekly
+# email instead of a silent Make retry-storm that fails for days unnoticed.
+def _coaching_rollup_fallback(error_message):
+    return {
+        "week_label": datetime.utcnow().strftime("%b %d, %Y"),
+        "meetings_reviewed": 0,
+        "scores": {
+            "listening": None,
+            "questions": None,
+            "advice_timing": None,
+            "situational_read": None,
+            "restraint": None,
+            "avg": None,
+        },
+        "patterns": [],
+        "strengths_this_week": [],
+        "focus_last_week": "",
+        "focus_movement": "",
+        "focus_next_week": "",
+        "high_five": "",
+        "nudge": f"Coaching synthesis failed this week: {error_message}. Check the fireflies-parser Render logs and this week's ledger did not update.",
+        "one_line_summary": "Synthesis failed - see nudge field for the error.",
+    }
+
+
 @app.route('/coaching-rollup', methods=['POST'])
 def coaching_rollup():
     try:
@@ -546,7 +572,7 @@ def coaching_rollup():
                 "content-type": "application/json",
             },
             json={
-                "model": "claude-sonnet-4-20250514",
+                "model": "claude-sonnet-5",
                 "max_tokens": 4000,
                 "messages": [{"role": "user", "content": prompt}],
             },
@@ -555,7 +581,7 @@ def coaching_rollup():
         data = resp.json()
         response_text = data["content"][0]["text"].strip()
     except Exception as e:
-        return jsonify({"error": f"Claude API call failed: {str(e)}"}), 500
+        return jsonify({"success": True, "data": _coaching_rollup_fallback(str(e))}), 200
 
     try:
         parsed = json.loads(response_text)
