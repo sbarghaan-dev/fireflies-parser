@@ -7,6 +7,18 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# NEW - extract the actual reply text from a Claude Messages API response.
+# claude-sonnet-5 can engage extended thinking automatically on multi-step
+# reasoning prompts (no "thinking" param required to trigger it), which puts
+# a {"type": "thinking", ...} block at content[0] ahead of the real
+# {"type": "text", ...} block. Scanning for the text block instead of
+# hardcoding content[0] keeps this working regardless of how many blocks
+# come back or in what order.
+def _extract_message_text(data):
+    blocks = data.get("content") or []
+    return "".join(b.get("text", "") for b in blocks if b.get("type") == "text").strip()
+
+
 # NEW - Claude API call to generate Dex note summary
 def generate_dex_summary(overview_text, meeting_title, doc_url):
     api_key = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -38,7 +50,9 @@ def generate_dex_summary(overview_text, meeting_title, doc_url):
             timeout=30,
         )
         data = resp.json()
-        summary = data["content"][0]["text"].strip()
+        summary = _extract_message_text(data)
+        if not summary:
+            summary = (overview_text or "")[:400].strip()
     except Exception:
         summary = (overview_text or "")[:400].strip()
 
@@ -579,7 +593,9 @@ def coaching_rollup():
             timeout=55,
         )
         data = resp.json()
-        response_text = data["content"][0]["text"].strip()
+        response_text = _extract_message_text(data)
+        if not response_text:
+            raise ValueError("No text block in Claude response (content: %r)" % data.get("content"))
     except Exception as e:
         return jsonify({"success": True, "data": _coaching_rollup_fallback(str(e))}), 200
 
