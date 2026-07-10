@@ -84,6 +84,7 @@ def parse():
         "scott@scottbarghaan.com",       # primary, client-facing (June 2026+)
         "sbarghaan@gmail.com",           # legacy personal, forwards in
         "sbarghaan@barghaanllc.com",     # Workspace alias (pre-rename primary)
+        "scott.barghaan@northwestern.edu",  # Kellogg faculty email - not an attendee to route
     }
 
     if not text:
@@ -195,6 +196,9 @@ def parse():
 	"dialecticanet.com":	"1215241483038308",
 	"clay.com":		"1215241483038315",
 	"forgd.ai":		"1216090375681751",
+	"make.com":		"1210376255146963",	# Interview panel (Make) - route to My Network
+	"hyperscalerevenue.ai":	"1215449664209939",	# Jim Christen
+	"krevets.com":		"1216020035083144",	# Anna Krevets
     }
 
     MY_NETWORK_PROJECT_ID = "1210376255146963"
@@ -225,6 +229,16 @@ def parse():
 	"kburkert@salesforce.com":	"1214836818737266",		#Kevin Burkert - Salesforce
 	"ssawkar@salesforce.com":	"1216090375681756",		#Siddarth Sawkar - Siddarth (SFDC)
 	"mark.niemiec@sap.com":		"1215241483038297",		#Mark Niemiec - SAP
+	"ben@lastrada.music":		"1210376255146963",		#Ben Moelis - route to My Network
+
+	# -------- Routing-fix, Jul 10 2026 pre-flight --------
+	"nathan.badowski@prudential.com":	"1209711513656719",	#Nate Badowski - Finance (Prudential advisor)
+	"rob.babcock@prudential.com":		"1209711513656719",	#Rob Babcock - Finance (Prudential advisor)
+	"noam@evolinq.ai":			"1216460107552418",	#Noam Shakuri - Evolinq
+	"bohdan.pyrih@everrest.org":		"1216460107552423",	#Bohdan Pyrih - Everrest
+	"daniel.gordon@law.northwestern.edu":	"1210898462894262",	#Daniel Gordon - K-General
+	"roblambjr@gmail.com":			"1216454671006195",	#Rob Lamb - Disabled Life Alliance
+	"pkent@disabledlifealliance.com":	"1216454671006195",	#P. Kent - Disabled Life Alliance
 
     # -------- Kellogg overrides (one domain, many projects -> must route per-email) --------
     "kathleen.bayert@kellogg.northwestern.edu": "1211175684625793",  # K - Kathy
